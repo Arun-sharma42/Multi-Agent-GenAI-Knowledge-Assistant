@@ -1,0 +1,162 @@
+ARTIFICIAL INTELLIGENCE & MACHINE LEARNING — KNOWLEDGE BASE
+============================================================
+Version 1.0 | University AI Department
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHAPTER 1: RETRIEVAL AUGMENTED GENERATION (RAG)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What is RAG?
+────────────
+Retrieval Augmented Generation (RAG) is a technique that enhances Large
+Language Models (LLMs) by giving them access to external knowledge at
+inference time. Instead of relying solely on information baked into model
+weights during training, RAG retrieves relevant documents from a knowledge
+base and provides them as context to the model before it generates a response.
+
+Why RAG matters:
+  - LLMs have a knowledge cutoff date — they don't know about recent events
+  - RAG allows models to answer questions about proprietary or private data
+  - It reduces hallucinations by grounding answers in real documents
+  - The source of information can be cited, making answers verifiable
+
+The RAG Pipeline:
+  1. INDEXING (offline):
+       Documents → Text extraction → Chunking → Embedding → Vector DB
+
+  2. RETRIEVAL (at query time):
+       User query → Embed query → Similarity search → Top-K chunks
+
+  3. GENERATION:
+       Query + Retrieved chunks → LLM prompt → Grounded answer
+
+Chunking Strategies:
+  - Fixed-size chunking: Split by character count (simple but may break sentences)
+  - Recursive chunking: Split on paragraph, then sentence, then word boundaries
+  - Semantic chunking: Split based on meaning shifts (more sophisticated)
+  - Overlap: Chunks overlap by N characters to avoid losing cross-boundary context
+
+Vector Similarity Search:
+  When a query arrives, it is embedded into the same vector space as the documents.
+  The search then finds the nearest document vectors using metrics like:
+    - Cosine similarity (most common for text)
+    - Euclidean distance
+    - Dot product
+  FAISS (Facebook AI Similarity Search) is a popular open-source library for this.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHAPTER 2: LARGE LANGUAGE MODELS (LLMs)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What is a Large Language Model?
+────────────────────────────────
+A Large Language Model is a neural network trained on massive amounts of text
+data to predict the next token in a sequence. Through this process, models
+learn grammar, facts, reasoning patterns, and even coding ability.
+
+Key LLM concepts:
+
+  Tokens: The basic units LLMs process. A token is roughly 4 characters or
+          0.75 words in English. "Hello world" = 2 tokens.
+
+  Context window: The maximum number of tokens an LLM can process at once.
+                  GPT-4 supports up to 128K tokens; Claude 3 supports 200K.
+
+  Temperature: Controls randomness in generation.
+               0 = deterministic (same output each time)
+               1 = creative / varied outputs
+
+  Prompt engineering: The art of crafting inputs that elicit the best outputs.
+                      Techniques include: few-shot examples, chain-of-thought,
+                      role assignment, and structured output requests.
+
+Popular LLMs (as of 2024):
+  - Claude 3.5 (Anthropic) — strong reasoning, 200K context
+  - GPT-4o (OpenAI) — multimodal, widely used
+  - Gemini 1.5 Pro (Google) — 1M token context window
+  - Llama 3 (Meta) — open source, runs locally
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHAPTER 3: MULTI-AGENT AI SYSTEMS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What is a Multi-Agent System?
+──────────────────────────────
+A multi-agent AI system consists of multiple specialised AI agents that
+collaborate to solve complex tasks. Each agent has a specific role and
+expertise, and a central orchestrator coordinates their actions.
+
+Benefits:
+  - Specialisation: Each agent is optimised for its specific task
+  - Modularity: Agents can be swapped or updated independently
+  - Scalability: New capabilities are added by adding new agents
+  - Reliability: If one agent fails, others can compensate
+
+Common agent types:
+  Router Agent:    Classifies user intent and dispatches to the right agent
+  RAG Agent:       Answers questions from documents using retrieval
+  SQL Agent:       Translates natural language to database queries
+  Code Agent:      Writes and executes code
+  Web Agent:       Browses the internet for current information
+  Memory Agent:    Maintains context and conversation history
+
+Agent communication patterns:
+  - Sequential: Agent A → Agent B → Agent C (pipeline)
+  - Parallel:   Multiple agents run simultaneously, results merged
+  - Hierarchical: Manager agent delegates to worker agents
+  - Peer-to-peer: Agents communicate directly with each other
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHAPTER 4: VECTOR DATABASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A vector database stores high-dimensional numerical representations (embeddings)
+of data and enables fast similarity search over them.
+
+Popular vector databases:
+  FAISS (Meta):     In-memory, extremely fast, great for prototypes
+  Chroma:           Simple, developer-friendly, good for local development
+  Pinecone:         Managed cloud service, production-ready
+  Weaviate:         Open source, supports hybrid search (vector + keyword)
+  Qdrant:           Rust-based, very fast, good filtering support
+
+How embeddings work:
+  Text → Embedding model → 384 or 1536-dimensional float vector
+  Similar texts produce vectors that are "close" in this high-dimensional space.
+  Searching for the nearest vectors to a query finds semantically similar text.
+
+Example: sentence-transformers/all-MiniLM-L6-v2
+  - Produces 384-dimensional embeddings
+  - Runs locally (no API key needed)
+  - Good balance of speed and quality for student projects
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHAPTER 5: TEXT-TO-SQL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Text-to-SQL is the task of translating a natural language question into a
+valid SQL query that can be executed against a relational database.
+
+How it works:
+  1. User asks: "Show students who scored above 80 in Mathematics"
+  2. The LLM receives the question + database schema
+  3. The LLM generates: SELECT s.name, r.marks FROM students s
+                         JOIN results r ON s.id = r.student_id
+                         JOIN subjects sub ON r.subject_id = sub.id
+                         WHERE sub.name = 'Mathematics' AND r.marks > 80
+  4. The system executes the SQL and returns formatted results
+
+Security considerations:
+  - Always validate that generated SQL is a SELECT (not INSERT/DELETE/DROP)
+  - Use read-only database users in production
+  - Sanitise the schema description given to the LLM
+  - Add query timeouts to prevent expensive operations
+
+Challenges:
+  - Ambiguous natural language (does "best students" mean highest average or highest single mark?)
+  - Complex JOIN logic across many tables
+  - Dialect differences (MySQL vs PostgreSQL vs SQLite syntax)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF DOCUMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

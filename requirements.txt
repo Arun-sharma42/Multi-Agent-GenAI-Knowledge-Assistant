@@ -1,0 +1,25 @@
+# ─── Core LLM & Framework ────────────────────────────────────────────────────
+anthropic>=0.25.0          # Claude API (swap for openai if preferred)
+langchain>=0.2.0            # Agent / chain orchestration
+langchain-core>=0.2.0
+langchain-text-splitters>=0.2.0       # Text splitting utilities
+langchain-community>=0.2.0 # Community integrations (FAISS, SQLite, etc.)
+langchain-anthropic>=0.1.0 # LangChain ↔ Anthropic adapter
+
+# ─── RAG / Vector Store ───────────────────────────────────────────────────────
+faiss-cpu>=1.7.4           # Vector similarity search
+sentence-transformers>=2.7 # Local embeddings (no API key needed)
+pypdf>=4.0.0               # PDF text extraction
+python-docx>=1.1.0         # DOCX text extraction
+tiktoken>=0.7.0            # Token counting / chunking
+
+# ─── Database ─────────────────────────────────────────────────────────────────
+# SQLite is part of Python stdlib — no extra install needed
+
+# ─── UI ──────────────────────────────────────────────────────────────────────
+streamlit>=1.35.0          # Chat UI
+
+# ─── Utilities ───────────────────────────────────────────────────────────────
+python-dotenv>=1.0.0       # Load .env variables
+loguru>=0.7.2              # Clean structured logging
+pydantic>=2.7.0            # Data validation / typed models
