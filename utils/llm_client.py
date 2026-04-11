@@ -35,17 +35,17 @@ def get_llm(temperature: float = 0.2) -> BaseLanguageModel:
             temperature=temperature,
         )
 
-    elif provider == "openai":
-        from langchain_openai import ChatOpenAI
-        log.info(f"Initialising OpenAI → {config.LLM_MODEL}")
-        return ChatOpenAI(
+    elif provider == "google":
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        log.info(f"Initialising Google Gemini -> {config.LLM_MODEL}")
+        return ChatGoogleGenerativeAI(
             model=config.LLM_MODEL,
-            openai_api_key=config.OPENAI_API_KEY,
+            google_api_key=config.GOOGLE_API_KEY,
             temperature=temperature,
         )
 
     else:
         raise ValueError(
             f"Unknown LLM_PROVIDER '{provider}'. "
-            "Set LLM_PROVIDER=anthropic or LLM_PROVIDER=openai in .env"
+            "Set LLM_PROVIDER=anthropic or LLM_PROVIDER=google in your secrets/env."
         )

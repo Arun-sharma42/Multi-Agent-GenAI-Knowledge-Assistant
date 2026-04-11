@@ -23,3 +23,5 @@ streamlit>=1.35.0          # Chat UI
 python-dotenv>=1.0.0       # Load .env variables
 loguru>=0.7.2              # Clean structured logging
 pydantic>=2.7.0            # Data validation / typed models
+
+langchain-google-genai
