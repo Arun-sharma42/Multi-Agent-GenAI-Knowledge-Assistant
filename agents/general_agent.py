@@ -42,8 +42,11 @@ class GeneralAgent(BaseAgent):
         ]
 
         response = self.llm.invoke(messages)
+        content = response.content
+        if isinstance(content, list):
+            content = "".join([c.get("text", str(c)) if isinstance(c, dict) else str(c) for c in content])
 
         return AgentResponse(
-            answer=response.content.strip(),
+            answer=str(content).strip(),
             agent_name=self.name,
         )

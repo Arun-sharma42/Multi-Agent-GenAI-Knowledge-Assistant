@@ -63,7 +63,10 @@ class RouterAgent(BaseAgent):
         ]
 
         raw = self.llm.invoke(messages)
-        route = raw.content.strip().lower()
+        content = raw.content
+        if isinstance(content, list):
+            content = "".join([c.get("text", str(c)) if isinstance(c, dict) else str(c) for c in content])
+        route = str(content).strip().lower()
 
         # Safety net — default to general if we get an unexpected label
         valid_routes = {"rag", "sql", "general"}

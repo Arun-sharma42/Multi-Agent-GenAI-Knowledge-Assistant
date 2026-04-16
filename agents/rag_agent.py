@@ -84,7 +84,10 @@ QUESTION:
         ]
 
         response = self.llm.invoke(messages)
-        answer   = response.content.strip()
+        content = response.content
+        if isinstance(content, list):
+            content = "".join([c.get("text", str(c)) if isinstance(c, dict) else str(c) for c in content])
+        answer = str(content).strip()
 
         return AgentResponse(
             answer=answer,

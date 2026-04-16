@@ -9,6 +9,7 @@ langchain-anthropic>=0.1.0 # LangChain ↔ Anthropic adapter
 # ─── RAG / Vector Store ───────────────────────────────────────────────────────
 faiss-cpu>=1.7.4           # Vector similarity search
 sentence-transformers>=2.7 # Local embeddings (no API key needed)
+torchvision                # Required for some transformers sub-modules
 pypdf>=4.0.0               # PDF text extraction
 python-docx>=1.1.0         # DOCX text extraction
 tiktoken>=0.7.0            # Token counting / chunking

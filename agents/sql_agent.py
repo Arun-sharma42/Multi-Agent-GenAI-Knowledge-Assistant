@@ -124,8 +124,11 @@ class SQLAgent(BaseAgent):
             HumanMessage(content=f"Question: {query}"),
         ]
         response = self.llm.invoke(messages)
+        content = response.content
+        if isinstance(content, list):
+            content = "".join([c.get("text", str(c)) if isinstance(c, dict) else str(c) for c in content])
         # Strip any markdown fences the model might have added
-        sql = response.content.strip()
+        sql = str(content).strip()
         sql = re.sub(r"^```(?:sql)?", "", sql, flags=re.IGNORECASE).strip()
         sql = re.sub(r"```$", "", sql).strip()
         return sql
