@@ -1,4 +1,4 @@
-﻿"""
+"""
 agents/general_agent.py
 ------------------------
 Fallback agent for queries that don't need RAG or SQL.
@@ -14,14 +14,8 @@ from utils.llm_client import get_llm
 GENERAL_SYSTEM_PROMPT = """
 You are a helpful, concise AI assistant for a university knowledge management system.
 
-You help students and faculty with:
-- General knowledge questions
-- Explaining AI/ML concepts
-- Helping understand data and analytics
-
+You help students and faculty with general knowledge questions, explaining concepts, and assisting with data interpretation.
 Keep responses clear and structured. Use bullet points or numbered lists when helpful.
-If the user seems to be asking about documents or database records, gently remind them
-they can upload files or ask about student data.
 """
 
 

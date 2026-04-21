@@ -1,4 +1,4 @@
-﻿"""
+"""
 ui/app.py
 ----------
 Streamlit chat interface for the Multi-Agent Knowledge Assistant.
@@ -26,6 +26,13 @@ from main import Orchestrator
 from database.db_setup import seed_database
 from rag.document_processor import load_document, chunk_documents
 from rag.vector_store import vector_store
+from agents.gemini_doc_agent import (
+    extract_text_from_file,
+    store_document,
+    list_documents,
+    has_documents,
+    clear_documents,
+)
 from utils.logger import get_logger
 
 log = get_logger("StreamlitUI")
@@ -109,7 +116,7 @@ with st.sidebar:
 
     # -- Document upload ----------------------------------------------------
     st.subheader("📂 Upload Documents")
-    st.caption("PDF, DOCX, or TXT files are indexed into the RAG knowledge base.")
+    st.caption("PDF, DOCX, or TXT — Gemini will read and analyse the full content.")
 
     uploaded_files = st.file_uploader(
         "Choose files",
@@ -124,37 +131,67 @@ with st.sidebar:
             with st.spinner("Processing documents..."):
                 for uploaded_file in uploaded_files:
                     try:
-                        # Save to a temp file so we can read it
                         suffix = os.path.splitext(uploaded_file.name)[1]
-                        with tempfile.NamedTemporaryFile(
-                            delete=False, suffix=suffix
-                        ) as tmp:
-                            tmp.write(uploaded_file.read())
-                            tmp_path = tmp.name
 
-                        docs   = load_document(tmp_path)
-                        chunks = chunk_documents(docs)
-                        vector_store.add_documents(chunks)
-                        total_chunks += len(chunks)
+                        # Write to temp file (Windows-safe)
+                        tfile = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+                        tfile.write(uploaded_file.read())
+                        tmp_path = tfile.name
+                        tfile.close()
 
-                        # Fix metadata source to show the real filename
-                        for c in chunks:
-                            c.metadata["source"] = uploaded_file.name
+                        try:
+                            # ── 1. Extract raw text → GeminiDocAgent (native analysis) ──
+                            raw_text = extract_text_from_file(tmp_path, uploaded_file.name)
+                            store_document(uploaded_file.name, raw_text)
 
-                        os.unlink(tmp_path)
-                        st.success(f"[OK] {uploaded_file.name} -> {len(chunks)} chunks")
+                            # ── 2. Also chunk → FAISS for RAG fallback ───────────────
+                            docs   = load_document(tmp_path)
+                            chunks = chunk_documents(docs)
+                            for c in chunks:
+                                c.metadata["source"] = uploaded_file.name
+                            vector_store.add_documents(chunks)
+                            total_chunks += len(chunks)
+
+                            st.success(
+                                f"✅ **{uploaded_file.name}** — "
+                                f"{len(raw_text):,} chars extracted, "
+                                f"{len(chunks)} chunks indexed"
+                            )
+                        finally:
+                            if os.path.exists(tmp_path):
+                                os.unlink(tmp_path)
 
                     except Exception as e:
                         st.error(f"✗ {uploaded_file.name}: {e}")
 
             st.session_state.doc_count = vector_store.doc_count()
-            st.info(f"Total vectors in store: {vector_store.doc_count():,}")
+            st.info(f"Vectors in FAISS store: {vector_store.doc_count():,}")
             st.rerun()
+
+    # Show currently loaded docs
+    loaded = list_documents()
+    if loaded:
+        st.divider()
+        st.caption("📄 **Loaded documents (Gemini will read these):**")
+        for fname in loaded:
+            st.markdown(f"&nbsp;&nbsp;📄 `{fname}`", unsafe_allow_html=True)
+        if st.button("🗑️ Clear Documents", use_container_width=True, key="clear_docs"):
+            clear_documents()
+            st.rerun()
+    else:
+        st.caption("_No documents loaded yet._")
 
     st.divider()
 
     # -- Example queries ----------------------------------------------------
     st.subheader("💡 Example Queries")
+
+    doc_examples = [
+        "Summarise the uploaded document",
+        "What are the key points in the PDF?",
+        "What does the document say about [topic]?",
+        "List the main conclusions from the document",
+    ]
 
     sql_examples = [
         "Show students with marks above 80",
@@ -168,6 +205,11 @@ with st.sidebar:
         "Explain vector databases",
         "Hello! What can you do?",
     ]
+
+    st.caption("📄 Document Q&A (upload a PDF first)")
+    for q in doc_examples:
+        if st.button(q, use_container_width=True, key=f"doc_{q}"):
+            st.session_state["pending_query"] = q
 
     st.caption("🗄️ Database queries")
     for q in sql_examples:

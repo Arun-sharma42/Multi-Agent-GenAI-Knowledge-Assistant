@@ -1,4 +1,4 @@
-﻿"""
+"""
 agents/router_agent.py
 -----------------------
 The entry point for every user message.
@@ -26,19 +26,24 @@ ROUTER_SYSTEM_PROMPT = """
 You are an intent classification assistant for a multi-agent AI system.
 Classify the user's query into EXACTLY ONE of these categories:
 
-  rag     - The user is asking about content from uploaded documents (PDFs, notes, etc.)
-  sql     - The user is asking about student records, marks, scores, or database data
-  general - Everything else: greetings, general knowledge, follow-up, meta questions
+  rag     - The user is asking about ANY factual topic, broad knowledge, or specific details 
+            that might be in uploaded documents (e.g., science, AI, project notes, company info).
+  sql     - The user is asking about quantitative student data: marks, scores, list of names, 
+            ages, grades, or specific results from the 'students' database.
+  general - Purely conversational items: greetings (hello/hi), thanks, or questions 
+            about your own capabilities.
 
-Respond with ONLY the category label (lowercase). No explanation. No punctuation.
+Respond with ONLY the category label (lowercase). No explanation.
 
 Examples:
   "What does the document say about neural networks?" -> rag
-  "Show students who scored above 80"                 -> sql
+  "What is machine learning?"                         -> rag
+  "Explain the transformer architecture"               -> rag
+  "Show students who scored above 80 in Maths"        -> sql
+  "What is Bob's average mark?"                       -> sql
   "List all students in the database"                 -> sql
-  "What is machine learning?"                         -> general
-  "Hello!"                                            -> general
-  "Summarise the uploaded PDF"                        -> rag
+  "Hello, how are you?"                               -> general
+  "Who are you?"                                      -> general
 """
 
 
@@ -55,7 +60,6 @@ class RouterAgent(BaseAgent):
     def run(self, query: str, context: str = "") -> AgentResponse:
         """
         Classify the query and return the chosen route in metadata.
-        The orchestrator reads result.metadata["route"] to dispatch.
         """
         messages = [
             SystemMessage(content=ROUTER_SYSTEM_PROMPT),
@@ -66,14 +70,14 @@ class RouterAgent(BaseAgent):
         content = raw.content
         if isinstance(content, list):
             content = "".join([c.get("text", str(c)) if isinstance(c, dict) else str(c) for c in content])
-        route = str(content).strip().lower()
-
-        # Safety net -- default to general if we get an unexpected label
-        valid_routes = {"rag", "sql", "general"}
-        if route not in valid_routes:
-            self.log.warning(
-                f"Unexpected route '{route}' -- defaulting to 'general'"
-            )
+        
+        # Robust parsing: Look for the intent labels inside the LLM answer
+        res = str(content).lower()
+        if "sql" in res:
+            route = "sql"
+        elif "rag" in res:
+            route = "rag"
+        else:
             route = "general"
 
         self.log.info(f"Routed '{query[:60]}' -> {route.upper()}")

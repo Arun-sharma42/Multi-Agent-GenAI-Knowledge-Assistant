@@ -1,4 +1,4 @@
-﻿"""
+"""
 main.py
 --------
 The Orchestrator -- the brain of the multi-agent system.
@@ -29,12 +29,13 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
-from agents.router_agent   import RouterAgent
-from agents.rag_agent      import RAGAgent
-from agents.sql_agent      import SQLAgent
-from agents.general_agent  import GeneralAgent
-from agents.response_agent import ResponseAgent
-from agents.base_agent     import AgentResponse
+from agents.router_agent     import RouterAgent
+from agents.rag_agent        import RAGAgent
+from agents.sql_agent        import SQLAgent
+from agents.general_agent    import GeneralAgent
+from agents.gemini_doc_agent import GeminiDocAgent
+from agents.response_agent   import ResponseAgent
+from agents.base_agent       import AgentResponse
 from utils.memory          import ConversationMemory
 from utils.logger          import get_logger
 
@@ -49,12 +50,23 @@ class Orchestrator:
 
     def __init__(self):
         log.info("Initialising multi-agent system...")
-        self.router   = RouterAgent()
-        self.rag      = RAGAgent()
-        self.sql      = SQLAgent()
-        self.general  = GeneralAgent()
+        self.router    = RouterAgent()
+        self.rag       = RAGAgent()
+        self.sql       = SQLAgent()
+        self.general   = GeneralAgent()
+        self.doc       = GeminiDocAgent()   # Native Gemini PDF/DOCX analyser
         self.formatter = ResponseAgent()
-        self.memory   = ConversationMemory()
+        self.memory    = ConversationMemory()
+
+        # -- Auto-ingest sample docs if store is empty ----------------------
+        from rag.vector_store import vector_store
+        from rag.document_processor import load_all_from_directory
+        if vector_store.doc_count() == 0:
+            log.info("Vector store is empty. Checking sample_docs for initial ingestion...")
+            chunks = load_all_from_directory(config.DOCS_UPLOAD_PATH)
+            if chunks:
+                vector_store.add_documents(chunks)
+
         log.info("All agents ready [OK]")
 
     def process(self, query: str) -> tuple[str, str]:
@@ -75,13 +87,26 @@ class Orchestrator:
         route          = route_response.metadata.get("route", "general")
 
         # -- 3. Dispatch to the appropriate agent ---------------------------
+        from agents.gemini_doc_agent import has_documents
+
+        # If docs are uploaded, route doc-related queries to GeminiDocAgent
+        if route == "rag" and has_documents():
+            log.info("Documents present — routing to GeminiDocAgent for native analysis")
+            route = "doc"
+
         agent_map = {
             "rag":     self.rag,
             "sql":     self.sql,
             "general": self.general,
+            "doc":     self.doc,
         }
-        agent    = agent_map[route]
+        agent    = agent_map.get(route, self.general)
         response: AgentResponse = agent._safe_run(query, context=recent_context)
+
+        # -- 3b. FALLBACK: If RAG/Doc couldn't find the answer, try General --
+        if route in ("rag", "doc") and "not found" in response.answer.lower():
+            log.info("Doc/RAG search yielded no results -- falling back to General")
+            response = self.general._safe_run(query, context=recent_context)
 
         # -- 4. Format the final response -----------------------------------
         formatted = self.formatter.format(response)

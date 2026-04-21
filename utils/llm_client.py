@@ -1,4 +1,4 @@
-﻿"""
+"""
 utils/llm_client.py
 --------------------
 LLM factory (clean & stable version)
@@ -24,6 +24,7 @@ def get_llm(temperature: float = 0.2) -> BaseLanguageModel:
             model=config.LLM_MODEL,              # ✅ from config only
             google_api_key=config.GOOGLE_API_KEY,
             temperature=temperature,
+            convert_system_message_to_human=True,  # Required for Gemini
         )
 
     # -- ANTHROPIC CLAUDE ----------------------------------
