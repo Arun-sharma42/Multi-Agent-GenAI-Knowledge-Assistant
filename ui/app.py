@@ -168,19 +168,6 @@ with st.sidebar:
             st.info(f"Vectors in FAISS store: {vector_store.doc_count():,}")
             st.rerun()
 
-    # Show currently loaded docs
-    loaded = list_documents()
-    if loaded:
-        st.divider()
-        st.caption("📄 **Loaded documents (Gemini will read these):**")
-        for fname in loaded:
-            st.markdown(f"&nbsp;&nbsp;📄 `{fname}`", unsafe_allow_html=True)
-        if st.button("🗑️ Clear Documents", use_container_width=True, key="clear_docs"):
-            clear_documents()
-            st.rerun()
-    else:
-        st.caption("_No documents loaded yet._")
-
     st.divider()
 
     # -- Example queries ----------------------------------------------------
