@@ -1,15 +1,15 @@
-"""
+﻿"""
 agents/router_agent.py
-───────────────────────
+-----------------------
 The entry point for every user message.
 Uses the LLM to classify intent, then returns which downstream
 agent should handle the query.
 
 Intent categories
-─────────────────
-  "rag"     → User is asking about uploaded documents
-  "sql"     → User is asking about students / marks / database records
-  "general" → General conversation, greetings, anything else
+-----------------
+  "rag"     -> User is asking about uploaded documents
+  "sql"     -> User is asking about students / marks / database records
+  "general" -> General conversation, greetings, anything else
 
 Interview talking point:
   "The router uses a zero-shot classification prompt rather than
@@ -33,12 +33,12 @@ Classify the user's query into EXACTLY ONE of these categories:
 Respond with ONLY the category label (lowercase). No explanation. No punctuation.
 
 Examples:
-  "What does the document say about neural networks?" → rag
-  "Show students who scored above 80"                 → sql
-  "List all students in the database"                 → sql
-  "What is machine learning?"                         → general
-  "Hello!"                                            → general
-  "Summarise the uploaded PDF"                        → rag
+  "What does the document say about neural networks?" -> rag
+  "Show students who scored above 80"                 -> sql
+  "List all students in the database"                 -> sql
+  "What is machine learning?"                         -> general
+  "Hello!"                                            -> general
+  "Summarise the uploaded PDF"                        -> rag
 """
 
 
@@ -68,18 +68,18 @@ class RouterAgent(BaseAgent):
             content = "".join([c.get("text", str(c)) if isinstance(c, dict) else str(c) for c in content])
         route = str(content).strip().lower()
 
-        # Safety net — default to general if we get an unexpected label
+        # Safety net -- default to general if we get an unexpected label
         valid_routes = {"rag", "sql", "general"}
         if route not in valid_routes:
             self.log.warning(
-                f"Unexpected route '{route}' — defaulting to 'general'"
+                f"Unexpected route '{route}' -- defaulting to 'general'"
             )
             route = "general"
 
-        self.log.info(f"Routed '{query[:60]}' → {route.upper()}")
+        self.log.info(f"Routed '{query[:60]}' -> {route.upper()}")
 
         return AgentResponse(
-            answer=f"Routing to **{route.upper()} agent**…",
+            answer=f"Routing to **{route.upper()} agent**...",
             agent_name=self.name,
             metadata={"route": route},
         )

@@ -1,6 +1,6 @@
-"""
+﻿"""
 agents/response_agent.py
-─────────────────────────
+-------------------------
 The final stage in the pipeline.
 Takes a raw AgentResponse and polishes it for display:
   - Adds agent attribution badge
@@ -19,7 +19,7 @@ from agents.base_agent import AgentResponse
 class ResponseAgent:
     """
     Formats any AgentResponse into a clean, user-facing Markdown string.
-    This is NOT a BaseAgent subclass because it doesn't call the LLM —
+    This is NOT a BaseAgent subclass because it doesn't call the LLM --
     it's purely a formatting/presentation layer.
     """
 
@@ -38,19 +38,19 @@ class ResponseAgent:
             response.agent_name, ("💬", response.agent_name)
         )
 
-        # ── Agent attribution badge ────────────────────────────────────────
+        # -- Agent attribution badge ----------------------------------------
         header = f"{emoji} **{label}**\n\n"
 
-        # ── Main answer ───────────────────────────────────────────────────
+        # -- Main answer ---------------------------------------------------
         body = response.answer
 
-        # ── RAG: append source citations ──────────────────────────────────
+        # -- RAG: append source citations ----------------------------------
         sources = response.metadata.get("sources", [])
         if sources and response.agent_name == "RAGAgent":
             source_list = "\n".join(f"  - `{s}`" for s in sources)
             body += f"\n\n---\n📎 **Sources used:**\n{source_list}"
 
-        # ── Error state ───────────────────────────────────────────────────
+        # -- Error state ---------------------------------------------------
         if not response.success:
             body = f"⚠️ **Something went wrong:**\n\n{body}"
 
@@ -71,7 +71,7 @@ I'm your AI-powered assistant with three capabilities:
 
 **To get started:**
 1. Upload a document using the sidebar (PDF, DOCX, or TXT)
-2. Ask any question — I'll automatically route it to the right agent
+2. Ask any question -- I'll automatically route it to the right agent
 
 ---
 *Built with Claude · LangChain · FAISS · SQLite · Streamlit*

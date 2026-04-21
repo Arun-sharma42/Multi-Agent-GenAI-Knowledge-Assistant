@@ -1,13 +1,13 @@
-"""
+﻿"""
 database/db_setup.py
-─────────────────────
+---------------------
 Creates the SQLite database and seeds it with realistic sample data.
 Run this once before starting the app, or call seed_database() from main.py.
 
 Schema overview:
-  students   — name, age, grade, email
-  subjects   — name, max_marks
-  results    — student × subject marks (foreign keys)
+  students   -- name, age, grade, email
+  subjects   -- name, max_marks
+  results    -- student × subject marks (foreign keys)
 
 Interview talking point:
   "I normalised the schema to 3NF: students and subjects are separate
@@ -105,10 +105,10 @@ def seed_database(force: bool = False) -> None:
     db_path = Path(config.DATABASE_PATH)
 
     if db_path.exists() and not force:
-        log.info("Database already exists — skipping seed (use force=True to re-seed)")
+        log.info("Database already exists -- skipping seed (use force=True to re-seed)")
         return
 
-    log.info("Seeding database with sample data…")
+    log.info("Seeding database with sample data...")
     conn = get_connection()
     cur  = conn.cursor()
 
@@ -139,7 +139,7 @@ def seed_database(force: bool = False) -> None:
 
     conn.commit()
     conn.close()
-    log.info("Database seeded successfully ✓")
+    log.info("Database seeded successfully [OK]")
 
 
 def get_schema_description() -> str:
@@ -153,19 +153,19 @@ Database: students.db (SQLite)
 Tables:
   students (id, name, age, grade, email)
   subjects (id, name, max_marks)
-  results  (id, student_id → students.id, subject_id → subjects.id, marks, exam_date)
+  results  (id, student_id -> students.id, subject_id -> subjects.id, marks, exam_date)
 
 Relationships:
-  results.student_id → students.id
-  results.subject_id → subjects.id
+  results.student_id -> students.id
+  results.subject_id -> subjects.id
 
 Sample values:
   grades: 'A', 'B', 'C'
-  marks: 0–100 (REAL)
+  marks: 0-100 (REAL)
   exam_date: 'YYYY-MM-DD'
 """
 
 
 if __name__ == "__main__":
     seed_database(force=True)
-    print("✓ Database ready at", config.DATABASE_PATH)
+    print("[OK] Database ready at", config.DATABASE_PATH)

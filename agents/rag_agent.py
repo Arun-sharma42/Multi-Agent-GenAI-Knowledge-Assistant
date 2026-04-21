@@ -1,17 +1,17 @@
-"""
+﻿"""
 agents/rag_agent.py
-────────────────────
+--------------------
 Retrieval-Augmented Generation agent.
 Flow:
   1. Receive user query
-  2. Embed query → search vector store → retrieve top-k chunks
+  2. Embed query -> search vector store -> retrieve top-k chunks
   3. Build a prompt with retrieved context + conversation history
-  4. Send to LLM → return grounded answer with source citations
+  4. Send to LLM -> return grounded answer with source citations
 
 Interview talking point:
   "RAG solves the hallucination problem by giving the LLM real evidence
    to work from. The model is instructed to say 'I don't know' if the
-   context doesn't contain the answer — preventing confabulation."
+   context doesn't contain the answer -- preventing confabulation."
 """
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -45,7 +45,7 @@ class RAGAgent(BaseAgent):
         """
         Retrieve relevant chunks, then generate a grounded answer.
         """
-        # ── Step 1: Retrieve relevant document chunks ──────────────────────
+        # -- Step 1: Retrieve relevant document chunks ----------------------
         try:
             chunks = vector_store.similarity_search(query)
         except RuntimeError as e:
@@ -60,13 +60,13 @@ class RAGAgent(BaseAgent):
                 metadata={"error": str(e)},
             )
 
-        # ── Step 2: Format retrieved context ──────────────────────────────
+        # -- Step 2: Format retrieved context ------------------------------
         context_text  = self._format_chunks(chunks)
         source_labels = self._extract_sources(chunks)
 
         self.log.debug(f"Using {len(chunks)} chunks from: {source_labels}")
 
-        # ── Step 3: Build prompt and call LLM ─────────────────────────────
+        # -- Step 3: Build prompt and call LLM -----------------------------
         user_message = f"""
 CONTEXT (from uploaded documents):
 {context_text}
@@ -98,7 +98,7 @@ QUESTION:
             },
         )
 
-    # ── Helpers ────────────────────────────────────────────────────────────────
+    # -- Helpers ----------------------------------------------------------------
 
     def _format_chunks(self, chunks) -> str:
         """Format retrieved chunks into a numbered context block."""

@@ -1,6 +1,6 @@
-"""
+﻿"""
 rag/document_processor.py
-──────────────────────────
+--------------------------
 Handles loading documents of multiple formats and splitting them
 into overlapping chunks suitable for embedding.
 
@@ -8,7 +8,7 @@ Supports:  .pdf  .docx  .txt
 
 Interview talking point:
   "Chunking with overlap ensures that sentences spanning a chunk
-   boundary are still retrieved — the overlap acts like a sliding window."
+   boundary are still retrieved -- the overlap acts like a sliding window."
 """
 
 import os
@@ -48,7 +48,7 @@ def chunk_documents(documents: List[Document]) -> List[Document]:
     Split documents into overlapping chunks.
 
     RecursiveCharacterTextSplitter tries to split on:
-      '\n\n' → paragraph  →  '\n' → line  →  ' ' → word  →  ''
+      '\n\n' -> paragraph  ->  '\n' -> line  ->  ' ' -> word  ->  ''
     This keeps semantically related text together.
     """
     splitter = RecursiveCharacterTextSplitter(
@@ -57,7 +57,7 @@ def chunk_documents(documents: List[Document]) -> List[Document]:
         length_function=len,
     )
     chunks = splitter.split_documents(documents)
-    log.info(f"Split {len(documents)} docs → {len(chunks)} chunks "
+    log.info(f"Split {len(documents)} docs -> {len(chunks)} chunks "
              f"(size={config.CHUNK_SIZE}, overlap={config.CHUNK_OVERLAP})")
     return chunks
 
@@ -87,7 +87,7 @@ def load_all_from_directory(directory: str) -> List[Document]:
     return all_chunks
 
 
-# ── Private loaders ────────────────────────────────────────────────────────────
+# -- Private loaders ------------------------------------------------------------
 
 def _load_pdf(file_path: str) -> List[Document]:
     from pypdf import PdfReader

@@ -1,8 +1,8 @@
-"""
+﻿"""
 utils/logger.py
-───────────────
+---------------
 Structured logging using loguru.
-Every agent logs its actions so you can trace the full decision path —
+Every agent logs its actions so you can trace the full decision path --
 great for debugging AND for showing in interviews.
 """
 
@@ -18,7 +18,7 @@ def setup_logger() -> None:
     # Remove the default handler
     logger.remove()
 
-    # ── Console output (coloured, human-readable) ─────────────────────────────
+    # -- Console output (coloured, human-readable) -----------------------------
     logger.add(
         sys.stdout,
         format=(
@@ -31,7 +31,7 @@ def setup_logger() -> None:
         colorize=True,
     )
 
-    # ── File output (JSON-structured, great for log analysis) ─────────────────
+    # -- File output (JSON-structured, great for log analysis) -----------------
     log_path = Path(config.LOG_PATH)
     log_path.parent.mkdir(parents=True, exist_ok=True)
 

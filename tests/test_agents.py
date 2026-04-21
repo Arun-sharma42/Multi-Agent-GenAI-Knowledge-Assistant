@@ -1,8 +1,8 @@
-"""
+﻿"""
 tests/test_agents.py
-─────────────────────
+---------------------
 Unit tests for the multi-agent system.
-Uses unittest.mock to avoid real API calls during testing —
+Uses unittest.mock to avoid real API calls during testing --
 critical for CI/CD pipelines and development without burning API credits.
 
 Run with:  python -m pytest tests/ -v
@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, patch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-# ── Test: Router Agent ─────────────────────────────────────────────────────────
+# -- Test: Router Agent ---------------------------------------------------------
 
 class TestRouterAgent(unittest.TestCase):
 
@@ -62,7 +62,7 @@ class TestRouterAgent(unittest.TestCase):
         self.assertEqual(result.metadata["route"], "general")
 
 
-# ── Test: SQL Agent ────────────────────────────────────────────────────────────
+# -- Test: SQL Agent ------------------------------------------------------------
 
 class TestSQLAgent(unittest.TestCase):
 
@@ -122,7 +122,7 @@ class TestSQLAgent(unittest.TestCase):
         self.assertIn("no rows", result.lower())
 
 
-# ── Test: Memory ───────────────────────────────────────────────────────────────
+# -- Test: Memory ---------------------------------------------------------------
 
 class TestConversationMemory(unittest.TestCase):
 
@@ -153,7 +153,7 @@ class TestConversationMemory(unittest.TestCase):
         self.assertEqual(len(self.memory), 0)
 
 
-# ── Test: Document Processor ───────────────────────────────────────────────────
+# -- Test: Document Processor ---------------------------------------------------
 
 class TestDocumentProcessor(unittest.TestCase):
 
@@ -184,7 +184,7 @@ class TestDocumentProcessor(unittest.TestCase):
             load_document("document.xyz")
 
 
-# ── Test: Response Agent ───────────────────────────────────────────────────────
+# -- Test: Response Agent -------------------------------------------------------
 
 class TestResponseAgent(unittest.TestCase):
 
@@ -218,7 +218,7 @@ class TestResponseAgent(unittest.TestCase):
         self.assertGreater(len(welcome), 100)
 
 
-# ── Run all tests ──────────────────────────────────────────────────────────────
+# -- Run all tests --------------------------------------------------------------
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

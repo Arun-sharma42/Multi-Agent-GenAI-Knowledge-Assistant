@@ -1,6 +1,6 @@
-"""
+﻿"""
 agents/general_agent.py
-────────────────────────
+------------------------
 Fallback agent for queries that don't need RAG or SQL.
 Uses conversation history for continuity (follow-up questions work).
 """

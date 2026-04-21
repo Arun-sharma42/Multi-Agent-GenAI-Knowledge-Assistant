@@ -1,6 +1,6 @@
-"""
+﻿"""
 agents/sql_agent.py
-────────────────────
+--------------------
 Text-to-SQL agent flow:
   1. Receive natural language query
   2. Build prompt with the database schema
@@ -10,7 +10,7 @@ Text-to-SQL agent flow:
   6. Return formatted results
 
 Interview talking point:
-  "Security is critical here — I strip anything that isn't a SELECT
+  "Security is critical here -- I strip anything that isn't a SELECT
    statement before execution, and I use parameterised queries where
    possible. In production, you'd add a dedicated SQL firewall."
 """
@@ -30,7 +30,7 @@ SQL_SYSTEM_PROMPT = """
 You are an expert SQLite query writer. Given a natural language question and a database schema, write a single valid SQLite SELECT query.
 
 Rules:
-1. Output ONLY the raw SQL query — no markdown, no backticks, no explanation.
+1. Output ONLY the raw SQL query -- no markdown, no backticks, no explanation.
 2. Only write SELECT statements. Never INSERT, UPDATE, DELETE, DROP, or ALTER.
 3. Use table aliases for clarity (e.g. s for students, r for results).
 4. Use ROUND(value, 2) for decimal marks.
@@ -56,7 +56,7 @@ class SQLAgent(BaseAgent):
         """
         Full Text-to-SQL pipeline.
         """
-        # ── Step 1: Generate SQL ───────────────────────────────────────────
+        # -- Step 1: Generate SQL -------------------------------------------
         sql = self._generate_sql(query)
         self.log.info(f"Generated SQL: {sql}")
 
@@ -73,7 +73,7 @@ class SQLAgent(BaseAgent):
                 metadata={"sql": sql},
             )
 
-        # ── Step 2: Validate SQL (security check) ─────────────────────────
+        # -- Step 2: Validate SQL (security check) -------------------------
         validation_error = self._validate_sql(sql)
         if validation_error:
             return AgentResponse(
@@ -83,7 +83,7 @@ class SQLAgent(BaseAgent):
                 metadata={"sql": sql, "error": validation_error},
             )
 
-        # ── Step 3: Execute ────────────────────────────────────────────────
+        # -- Step 3: Execute ------------------------------------------------
         rows, columns, error = self._execute_sql(sql)
 
         if error:
@@ -94,7 +94,7 @@ class SQLAgent(BaseAgent):
                 metadata={"sql": sql, "error": error},
             )
 
-        # ── Step 4: Format results ─────────────────────────────────────────
+        # -- Step 4: Format results -----------------------------------------
         formatted = self._format_results(rows, columns)
         row_count = len(rows)
 
@@ -114,7 +114,7 @@ class SQLAgent(BaseAgent):
             },
         )
 
-    # ── Private helpers ────────────────────────────────────────────────────────
+    # -- Private helpers --------------------------------------------------------
 
     def _generate_sql(self, query: str) -> str:
         """Ask the LLM to write SQL for the given natural language query."""
@@ -175,7 +175,7 @@ class SQLAgent(BaseAgent):
         Render query results as a Markdown table for clean display in the UI.
         """
         if not rows:
-            return "✅ Query executed successfully — no rows returned."
+            return "✅ Query executed successfully -- no rows returned."
 
         # Header
         header    = "| " + " | ".join(columns) + " |"

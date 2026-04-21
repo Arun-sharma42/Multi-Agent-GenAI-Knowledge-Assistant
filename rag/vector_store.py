@@ -1,6 +1,6 @@
-"""
+﻿"""
 rag/vector_store.py
-────────────────────
+--------------------
 Manages the FAISS vector database:
   - Builds embeddings using sentence-transformers (runs locally, free)
   - Saves / loads the index to/from disk
@@ -8,7 +8,7 @@ Manages the FAISS vector database:
 
 Interview talking point:
   "I chose sentence-transformers for embeddings because they run
-   locally with no API cost — good for a student project. In production
+   locally with no API cost -- good for a student project. In production
    I'd swap to text-embedding-3-small for higher accuracy."
 """
 
@@ -44,7 +44,7 @@ class VectorStoreManager:
         if self._index_exists():
             self._load()
 
-    # ── Public API ─────────────────────────────────────────────────────────────
+    # -- Public API -------------------------------------------------------------
 
     def add_documents(self, documents: List[Document]) -> int:
         """
@@ -52,13 +52,13 @@ class VectorStoreManager:
         Returns the number of documents added.
         """
         if not documents:
-            log.warning("add_documents called with empty list — nothing to do")
+            log.warning("add_documents called with empty list -- nothing to do")
             return 0
 
-        log.info(f"Embedding {len(documents)} chunks…")
+        log.info(f"Embedding {len(documents)} chunks...")
 
         if self._store is None:
-            # First time — build from scratch
+            # First time -- build from scratch
             self._store = FAISS.from_documents(documents, self._embeddings)
         else:
             # Append to existing index
@@ -101,19 +101,19 @@ class VectorStoreManager:
             shutil.rmtree(self._index_path)
         log.info("Vector store cleared")
 
-    # ── Private helpers ────────────────────────────────────────────────────────
+    # -- Private helpers --------------------------------------------------------
 
     def _save(self) -> None:
         self._index_path.mkdir(parents=True, exist_ok=True)
         self._store.save_local(str(self._index_path))
-        log.debug(f"Index saved → {self._index_path}")
+        log.debug(f"Index saved -> {self._index_path}")
 
     def _load(self) -> None:
         log.info(f"Loading existing FAISS index from {self._index_path}")
         self._store = FAISS.load_local(
             str(self._index_path),
             self._embeddings,
-            allow_dangerous_deserialization=True,  # Safe — our own files
+            allow_dangerous_deserialization=True,  # Safe -- our own files
         )
         log.info(f"Loaded {self.doc_count()} vectors")
 
@@ -121,5 +121,5 @@ class VectorStoreManager:
         return (self._index_path / "index.faiss").exists()
 
 
-# Singleton — shared across all agents in the session
+# Singleton -- shared across all agents in the session
 vector_store = VectorStoreManager()

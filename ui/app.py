@@ -1,13 +1,13 @@
-"""
+﻿"""
 ui/app.py
-──────────
+----------
 Streamlit chat interface for the Multi-Agent Knowledge Assistant.
 
 Run with:  streamlit run ui/app.py
 
 Features:
   - Chat-style message history
-  - File upload (PDF, DOCX, TXT) → ingests into RAG pipeline
+  - File upload (PDF, DOCX, TXT) -> ingests into RAG pipeline
   - Agent badge on each response shows which agent answered
   - Sidebar shows system status (vector store size, DB connectivity)
   - Memory clear button
@@ -31,7 +31,7 @@ from utils.logger import get_logger
 log = get_logger("StreamlitUI")
 
 
-# ── Page config (must be first Streamlit call) ─────────────────────────────────
+# -- Page config (must be first Streamlit call) ---------------------------------
 st.set_page_config(
     page_title="Multi-Agent Knowledge Assistant",
     page_icon="🎓",
@@ -40,7 +40,7 @@ st.set_page_config(
 )
 
 
-# ── Custom CSS (minimal, clean) ────────────────────────────────────────────────
+# -- Custom CSS (minimal, clean) ------------------------------------------------
 st.markdown("""
 <style>
     .agent-badge {
@@ -60,10 +60,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ── Session state initialisation ───────────────────────────────────────────────
+# -- Session state initialisation -----------------------------------------------
 def init_session():
     if "orchestrator" not in st.session_state:
-        with st.spinner("🚀 Initialising agents…"):
+        with st.spinner("🚀 Initialising agents..."):
             seed_database()            # Create DB if it doesn't exist
             st.session_state.orchestrator = Orchestrator()
             st.session_state.messages     = []
@@ -82,12 +82,12 @@ init_session()
 orch: Orchestrator = st.session_state.orchestrator
 
 
-# ── Sidebar ────────────────────────────────────────────────────────────────────
+# -- Sidebar --------------------------------------------------------------------
 with st.sidebar:
     st.title("⚙️ System Panel")
     st.divider()
 
-    # ── Status indicators ──────────────────────────────────────────────────
+    # -- Status indicators --------------------------------------------------
     st.subheader("📊 Status")
     doc_count = vector_store.doc_count()
     col1, col2 = st.columns(2)
@@ -107,7 +107,7 @@ with st.sidebar:
 
     st.divider()
 
-    # ── Document upload ────────────────────────────────────────────────────
+    # -- Document upload ----------------------------------------------------
     st.subheader("📂 Upload Documents")
     st.caption("PDF, DOCX, or TXT files are indexed into the RAG knowledge base.")
 
@@ -121,7 +121,7 @@ with st.sidebar:
     if uploaded_files:
         if st.button("📥 Ingest Documents", type="primary", use_container_width=True):
             total_chunks = 0
-            with st.spinner("Processing documents…"):
+            with st.spinner("Processing documents..."):
                 for uploaded_file in uploaded_files:
                     try:
                         # Save to a temp file so we can read it
@@ -142,7 +142,7 @@ with st.sidebar:
                             c.metadata["source"] = uploaded_file.name
 
                         os.unlink(tmp_path)
-                        st.success(f"✓ {uploaded_file.name} → {len(chunks)} chunks")
+                        st.success(f"[OK] {uploaded_file.name} -> {len(chunks)} chunks")
 
                     except Exception as e:
                         st.error(f"✗ {uploaded_file.name}: {e}")
@@ -153,7 +153,7 @@ with st.sidebar:
 
     st.divider()
 
-    # ── Example queries ────────────────────────────────────────────────────
+    # -- Example queries ----------------------------------------------------
     st.subheader("💡 Example Queries")
 
     sql_examples = [
@@ -181,7 +181,7 @@ with st.sidebar:
 
     st.divider()
 
-    # ── Clear memory ───────────────────────────────────────────────────────
+    # -- Clear memory -------------------------------------------------------
     if st.button("🗑️ Clear Conversation", use_container_width=True):
         orch.clear_memory()
         # Keep only the welcome message
@@ -189,7 +189,7 @@ with st.sidebar:
         st.rerun()
 
 
-# ── Main chat area ─────────────────────────────────────────────────────────────
+# -- Main chat area -------------------------------------------------------------
 st.title("🎓 Multi-Agent Knowledge Assistant")
 st.caption("Powered by Claude · LangChain · FAISS · SQLite")
 
@@ -202,7 +202,7 @@ for msg in st.session_state.messages:
 if "pending_query" in st.session_state:
     user_input = st.session_state.pop("pending_query")
 else:
-    user_input = st.chat_input("Ask me anything…")
+    user_input = st.chat_input("Ask me anything...")
 
 if user_input:
     # Show user message immediately
@@ -212,7 +212,7 @@ if user_input:
 
     # Generate and stream response
     with st.chat_message("assistant"):
-        with st.spinner("Thinking…"):
+        with st.spinner("Thinking..."):
             try:
                 answer, agent_name = orch.process(user_input)
             except Exception as e:

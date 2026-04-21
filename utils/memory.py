@@ -1,11 +1,11 @@
-"""
+﻿"""
 utils/memory.py
-───────────────
+---------------
 Simple in-session conversation memory shared across all agents.
 Each turn is stored so any agent can reference prior context.
 
 Interview talking point:
-  "Memory is centralised — the router, RAG agent, and SQL agent all
+  "Memory is centralised -- the router, RAG agent, and SQL agent all
    write to and read from the same ConversationMemory instance, so
    follow-up questions like 'tell me more about that' work correctly."
 """
@@ -34,7 +34,7 @@ class ConversationMemory:
         self._history: list[Turn] = []
         self.max_turns = max_turns   # Prevent unbounded context growth
 
-    # ── Write ─────────────────────────────────────────────────────────────────
+    # -- Write -----------------------------------------------------------------
 
     def add_user(self, message: str) -> None:
         self._history.append(Turn(role="user", content=message))
@@ -46,7 +46,7 @@ class ConversationMemory:
         )
         self._trim()
 
-    # ── Read ──────────────────────────────────────────────────────────────────
+    # -- Read ------------------------------------------------------------------
 
     def get_history(self) -> list[Turn]:
         return list(self._history)
@@ -60,7 +60,7 @@ class ConversationMemory:
     def clear(self) -> None:
         self._history.clear()
 
-    # ── Internal ──────────────────────────────────────────────────────────────
+    # -- Internal --------------------------------------------------------------
 
     def _trim(self) -> None:
         """Keep only the last max_turns entries."""

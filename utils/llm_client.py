@@ -1,6 +1,6 @@
-"""
+﻿"""
 utils/llm_client.py
-────────────────────
+--------------------
 LLM factory (clean & stable version)
 """
 
@@ -14,11 +14,11 @@ log = get_logger("LLMClient")
 def get_llm(temperature: float = 0.2) -> BaseLanguageModel:
     provider = config.LLM_PROVIDER.lower()
 
-    # ── GOOGLE GEMINI ─────────────────────────────────────
+    # -- GOOGLE GEMINI -------------------------------------
     if provider == "google":
         from langchain_google_genai import ChatGoogleGenerativeAI
 
-        log.info(f"Using Gemini Model → {config.LLM_MODEL}")
+        log.info(f"Using Gemini Model -> {config.LLM_MODEL}")
 
         return ChatGoogleGenerativeAI(
             model=config.LLM_MODEL,              # ✅ from config only
@@ -26,11 +26,11 @@ def get_llm(temperature: float = 0.2) -> BaseLanguageModel:
             temperature=temperature,
         )
 
-    # ── ANTHROPIC CLAUDE ──────────────────────────────────
+    # -- ANTHROPIC CLAUDE ----------------------------------
     elif provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
 
-        log.info(f"Using Claude → {config.LLM_MODEL}")
+        log.info(f"Using Claude -> {config.LLM_MODEL}")
 
         return ChatAnthropic(
             model=config.LLM_MODEL,
@@ -38,7 +38,7 @@ def get_llm(temperature: float = 0.2) -> BaseLanguageModel:
             temperature=temperature,
         )
 
-    # ── ERROR ─────────────────────────────────────────────
+    # -- ERROR ---------------------------------------------
     else:
         raise ValueError(
             f"Unknown LLM_PROVIDER: {provider}"

@@ -1,12 +1,12 @@
-"""
+﻿"""
 agents/base_agent.py
-─────────────────────
+---------------------
 Abstract base class that every agent inherits.
 Enforces a consistent interface: every agent must implement .run().
 
 Interview talking point:
   "Using an ABC means I can plug in new agents without changing any
-   orchestration code — open/closed principle in practice."
+   orchestration code -- open/closed principle in practice."
 """
 
 from abc import ABC, abstractmethod
@@ -54,7 +54,7 @@ class BaseAgent(ABC):
         try:
             self.log.info(f"Processing: '{query[:80]}...'")
             result = self.run(query, context)
-            self.log.info(f"Completed — success={result.success}")
+            self.log.info(f"Completed -- success={result.success}")
             return result
         except Exception as e:
             self.log.error(f"Agent error: {e}")
